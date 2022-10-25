@@ -1,24 +1,18 @@
-package wethinkcode.places.API;
+package wethinkcode.places.router.route;
 
+import io.javalin.apibuilder.CrudHandler;
+import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * An interface used to create plugin Handlers for the web server
  */
-public interface Route extends Handler {
-
+public interface Route{
     /**
-     * The verb that will describe what kind of handler this will be
-     * @return A verb
+     * This contains all the handlers for this route
+     * @return the group of handlers
      */
     @NotNull
-    Verb getVerb();
-
-    /**
-     * The path after the URL to execute this Handler
-     * @return
-     */
-    @NotNull
-    String getPath();
+    EndpointGroup getEndPoints();
 }

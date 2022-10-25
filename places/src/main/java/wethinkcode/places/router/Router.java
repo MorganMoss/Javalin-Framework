@@ -1,58 +1,92 @@
-package wethinkcode.places.API;
+package wethinkcode.places.router;
 
+import wethinkcode.places.router.route.Route;
+
+import io.javalin.Javalin;
+
+import org.reflections.Reflections;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.getLogger;
+
 
 public class Router {
+    private static final String PLUGIN_PACKAGE_PREFIX = "wethinkcode.places.router.route";
+    private static final Logger logger = getLogger("Router");
 
-    private static final String PLUGIN_PACKAGE_PREFIX = "za.co.mathart.routes";
+    private static Javalin server;
 
     /**
-     * Gets a list of classes that implement APIHandler
-     *
+     * Gets a list of classes that implement Route
      * @return a set of classes
      */
-    private Set<Class<? extends Route>> getHandlers(){
+    private static Set<Class<? extends Route>> getHandlers(){
         Reflections reflections = new Reflections(PLUGIN_PACKAGE_PREFIX);
         return reflections.getSubTypesOf(Route.class);
     }
 
+    /**
+     * Takes a route and adds it to the servers routes
+     * @param route that controls handlers over a certain path.
+     */
+    private static void setupHandler(Route route){
+        server.routes(route.getEndPoints());
+    }
 
     /**
-     * Gets the path, verb and Handler from the plugin and adds it to the javalin object.
-     * @param route the Object that implements APIHandler
+     * Creates a runnable that will add a handler to the server
+     * @param handler to be added
+     * @return the runnable
      */
-    public void setupHandler(Route route){
-        String path = route.getPath();
+    private static Runnable createRunnable(Class<? extends Route> handler){
+        return () -> {
+            try {
+                setupHandler(handler.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | InvocationTargetException | IllegalAccessException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+            logger.info("The plugin '" + handler.getName() + "' has been loaded.");
+        };
+    }
 
-        switch (route.getVerb()){
-            case BEFORE     -> javalin.before   (path, route);
-            case GET        -> javalin.get      (path, route);
-            case POST       -> javalin.post     (path, route);
-            case PUT        -> javalin.put      (path, route);
-            case PATCH      -> javalin.patch    (path, route);
-            case DELETE     -> javalin.delete   (path, route);
-            case AFTER      -> javalin.after    (path, route);
-            case HEAD       -> javalin.head     (path, route);
-            case OPTIONS    -> javalin.options  (path, route);
-            case TRACE      -> throw new RuntimeException("Trace not implemented");
-            case CONNECT    -> throw new RuntimeException("Connect not implemented");
+    /**
+     * Waits for all the handlers to load
+     * @param pool of threads
+     * @throws InterruptedException if interrupted
+     */
+    private static void waitForLoad(ExecutorService pool) throws InterruptedException {
+        pool.shutdown();
+
+        if (!pool.awaitTermination(5, TimeUnit.MINUTES)){
+            throw new RuntimeException("Failed to load all Routes");
         }
     }
 
-
     /**
-     * Sets up the API calls for the server, excluding the static pages
+     * Sets up the router calls for the server, excluding the static pages
      */
-    public void setupHandlers(){
-        for (Class<? extends Route> apiHandler : getAPIHandlers()){
-            try {
-                setupAPIHandler(apiHandler.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | InvocationTargetException |
-                     IllegalAccessException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-            JavalinLogger.info("The plugin '" + apiHandler.getName() + "' has been loaded.");
+    private static void setupAllHandlers() throws InterruptedException {
+        Set<Class<? extends Route>> handlers = getHandlers();
+        ExecutorService pool = Executors.newFixedThreadPool(handlers.size());
+
+        logger.info("Starting to load Handlers...");
+
+        for (Class<? extends Route> handler : handlers){
+            pool.submit(createRunnable(handler));
         }
+        waitForLoad(pool);
+    }
+
+    public static void loadRoutes(Javalin server) throws InterruptedException {
+        Router.server = server;
+        setupAllHandlers();
+        Router.server = null;
     }
 
 }

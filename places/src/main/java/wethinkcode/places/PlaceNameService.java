@@ -2,12 +2,19 @@ package wethinkcode.places;
 
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.Resources;
 import io.javalin.Javalin;
 import picocli.CommandLine;
 import wethinkcode.places.model.Places;
+import wethinkcode.places.router.Router;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 
 /**
- * I provide a Place-names Service for places in South Africa.
+ * I provide a Province-names Service for places in South Africa.
  * <p>
  * I read place-name data from a CSV file that I read and
  * parse into the objects (domain model) that I use,
@@ -18,7 +25,7 @@ import wethinkcode.places.model.Places;
  * <ul>
  * <li>a list of available Provinces
  * <li>a list of all Towns/PlaceNameService in a given Province
- * <li>a list of all neighbourhoods in a given Town
+ * <li>a list of all neighbourhoods in a given Municipality
  * </ul>
  * I understand the following command-line arguments:
  * <dl>
@@ -36,14 +43,9 @@ import wethinkcode.places.model.Places;
 public class PlaceNameService implements Runnable {
 
     public static final int DEFAULT_SERVICE_PORT = 7000;
+    public static final String CFG_DATA_FILE = "PlaceNamesZA2008.csv";
 
-    // Configuration keys
-    public static final String CFG_CONFIG_FILE = "config.file";
-    public static final String CFG_DATA_DIR = "data.dir";
-    public static final String CFG_DATA_FILE = "data.file";
-    public static final String CFG_SERVICE_PORT = "server.port";
-
-    public static void main( String[] args ){
+    public static void main( String[] args ) throws IOException, URISyntaxException, InterruptedException {
         final PlaceNameService svc = new PlaceNameService().initialise();
         final int exitCode = new CommandLine( svc ).execute( args );
         System.exit( exitCode );
@@ -53,17 +55,21 @@ public class PlaceNameService implements Runnable {
 
     private Javalin server;
 
-    private Places places;
+    public static Places places;
 
     public PlaceNameService(){
+
     }
 
-    public void start(){
-        throw new UnsupportedOperationException( "TODO" );
+    public void start() {
+        int port = DEFAULT_SERVICE_PORT;
+        if (Properties.get("port")!=null){
+            port = Integer.parseInt(Properties.get("port"));
+        }
+        server.start();
     }
-
-    public void stop(){
-        throw new UnsupportedOperationException( "TODO" );
+    public void stop() {
+        server.stop();
     }
 
     /**
@@ -72,7 +78,7 @@ public class PlaceNameService implements Runnable {
      * starting up all the big machinery (i.e. without calling initialise()).
      */
     @VisibleForTesting
-    PlaceNameService initialise(){
+    PlaceNameService initialise() throws IOException, URISyntaxException, InterruptedException {
         places = initPlacesDb();
         server = initHttpServer();
         return this;
@@ -83,11 +89,14 @@ public class PlaceNameService implements Runnable {
         throw new UnsupportedOperationException( "TODO" );
     }
 
-    private Places initPlacesDb(){
-        throw new UnsupportedOperationException( "TODO" );
+    private Places initPlacesDb() throws IOException, URISyntaxException {
+        File databaseFile = new File(Resources.getResource(CFG_DATA_FILE).toURI());
+        return new PlacesCsvParser().parseCsvSource(databaseFile);
     }
 
-    private Javalin initHttpServer(){
-        throw new UnsupportedOperationException( "TODO" );
+    private Javalin initHttpServer() throws InterruptedException {
+        Javalin server = Javalin.create();
+        Router.loadRoutes(server);
+        return server;
     }
 }

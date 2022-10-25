@@ -5,23 +5,23 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.jetbrains.annotations.NotNull;
 import wethinkcode.places.PlaceNameService;
-import wethinkcode.places.model.Municipality;
+import wethinkcode.places.model.Place;
 
 import java.util.Optional;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
-public class TownController implements Route {
+public class PlaceController implements Route {
 
     /**
-     * Gets a town by name
+     * Gets a place by name
      */
-    void getTown(Context ctx){
+    void getMunicipality(Context ctx){
         String name = ctx.pathParam("name");
-        Optional<Municipality> town = PlaceNameService.places.municipality(name);
+        Optional<Place> place = PlaceNameService.places.place(name);
 
-        if (town.isPresent()){
-            ctx.json(town.get());
+        if (place.isPresent()){
+            ctx.json(place.get());
             ctx.status(HttpStatus.FOUND);
         } else {
             ctx.status(HttpStatus.NOT_FOUND);
@@ -31,9 +31,9 @@ public class TownController implements Route {
     @NotNull
     @Override
     public EndpointGroup getEndPoints() {
-        return () -> path("towns", () -> {
+        return () -> path("place", () -> {
             path("{name}", () -> {
-                get(this::getTown);
+                get(this::getMunicipality);
             });
         });
     }
