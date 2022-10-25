@@ -3,7 +3,7 @@ package wethinkcode.places.model;
 import java.util.Objects;
 
 /**
- * A Town represents any town, neighbourhood, populated area or settled place in the place-names
+ * A Municipality represents any town, neighbourhood, populated area or settled place in the place-names
  * data.
  * <p>
  We assume that there is only one town with a given getName in each Province. (<em>In reality this
@@ -11,18 +11,8 @@ import java.util.Objects;
  * then we'd also need better data than we have access to... Since our mission is to explore
  * Distributed Systems and integration, our assumption is Good Enough.)
  */
-public class Town
-    implements Comparable<Town>
+public record Municipality(String name, String province) implements Comparable<Municipality>
 {
-    private final String name;
-
-    private final String province;
-
-    public Town( String aName, String aProvince ){
-        name = aName;
-        province = aProvince;
-    }
-
     public String getName(){
         return name;
     }
@@ -32,7 +22,7 @@ public class Town
     }
 
     @Override
-    public int compareTo( Town other ){
+    public int compareTo( Municipality other ){
         if( other == null ) throw new NullPointerException();
         return getProvince().equals(other.getProvince() )
             ? getName().compareTo(other.getName() )
@@ -52,13 +42,13 @@ public class Town
         if( this == obj )return true;
         if( obj == null )return false;
         if( getClass() != obj.getClass() )return false;
-        final Town other = (Town) obj;
+        final Municipality other = (Municipality) obj;
         return this.province.equals( other.province )
             && this.name.equals( other.name );
     }
 
     @Override public String toString(){
-        return "Town{"
+        return "Municipality{"
             + getName()
             + ", "
             + getProvince()

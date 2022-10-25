@@ -30,18 +30,18 @@ public class PlaceNameApiTest
 
     @Test
     public void getProvincesJson(){
-        fail( "TODO" );
+        HttpResponse<JsonNode> response = Unirest.get( serverUrl() + "/provinces" ).asJson();
     }
 
     @Test
     public void getTownsInAProvince_provinceExistsInDb(){
-        HttpResponse<JsonNode> response = Unirest.get( serverUrl() + "/towns/KwaZulu-Natal" ).asJson();
+        HttpResponse<JsonNode> response = Unirest.get( serverUrl() + "/place/KwaZulu-Natal" ).asJson();
         fail( "TODO" );
     }
 
     @Test
     public void getTownsInAProvince_noSuchProvinceInDb(){
-        HttpResponse<JsonNode> response = Unirest.get( serverUrl() + "/towns/Oregon" ).asJson();
+        HttpResponse<JsonNode> response = Unirest.get( serverUrl() + "/place/Oregon" ).asJson();
         fail( "TODO" );
     }
 

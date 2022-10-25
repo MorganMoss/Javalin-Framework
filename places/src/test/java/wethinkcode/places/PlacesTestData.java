@@ -5,6 +5,8 @@ package wethinkcode.places;
  */
 public interface PlacesTestData
 {
+
+    public static final String HEADER = "Name,Feature_Description,pklid,Latitude,Longitude,Date,MapInfo,Province,fklFeatureSubTypeID,Previous_Name,fklMagisterialDistrictID,ProvinceID,fklLanguageID,fklDisteral,Local Municipality,Sound,District Municipality,fklLocalMunic,Comments,Meaning\n";
     public static final String CSV_DATA =
         // First line in the data is just headers and must be ignored.
         // In total, 13 lines including the header line, 5 of these are towns/urban areas.
@@ -17,7 +19,6 @@ public interface PlacesTestData
         // Note that this test data is NOT directly from the Places database, but has been
         // modified for test purposes.
         """
-        Name,Feature_Description,pklid,Latitude,Longitude,Date,MapInfo,Province,fklFeatureSubTypeID,Previous_Name,fklMagisterialDistrictID,ProvinceID,fklLanguageID,fklDisteral,Local Municipality,Sound,District Municipality,fklLocalMunic,Comments,Meaning
         Amatikulu,Station,95756,-29.05111111,31.53138889,31-05-1989,,KwaZulu-Natal,79,,237,4,16,DC28,uMlalazi,,,KZ284,,
         Amatikulu,Town,95757,-29.04666667,31.52805556,31-05-1989,,KwaZulu-Natal,111,,237,4,16,DC28,uMlalazi,,,KZ284,,
         Botrivier,Station,92996,-34.22666667,19.20611111,31-05-1979,,Western Cape,79,,15,9,16,DC3,Theewaterskloof,,,WC031,,

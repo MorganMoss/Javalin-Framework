@@ -3,7 +3,7 @@ package wethinkcode.places.db.memory;
 import java.util.Set;
 
 import org.junit.jupiter.api.*;
-import wethinkcode.places.model.Town;
+import wethinkcode.places.model.Municipality;
 
 
 /**
@@ -13,27 +13,27 @@ import wethinkcode.places.model.Town;
  */
 public class PlacesDbTest
 {
-    public static final Set<Town> TOWNS = Set.of(
-        new Town( "Cape Town", "Western Cape" ),
-        new Town( "Worcester", "Western Cape" ),
-        new Town( "Riversdale", "Western Cape" ),
-        new Town( "Gqeberha", "Eastern Cape" ),
-        new Town( "Queenstown", "Eastern Cape" ),
-        new Town( "Sandton-East", "Gauteng" ),
-        new Town( "Riversdale", "Gauteng" ),
-        new Town( "Mabopane", "Gauteng" ),
-        new Town( "Brakpan", "Gauteng" )
+    public static final Set<Municipality> MUNICIPALITIES = Set.of(
+        new Municipality( "Cape Municipality", "Western Cape" ),
+        new Municipality( "Worcester", "Western Cape" ),
+        new Municipality( "Riversdale", "Western Cape" ),
+        new Municipality( "Gqeberha", "Eastern Cape" ),
+        new Municipality( "Queenstown", "Eastern Cape" ),
+        new Municipality( "Sandton-East", "Gauteng" ),
+        new Municipality( "Riversdale", "Gauteng" ),
+        new Municipality( "Mabopane", "Gauteng" ),
+        new Municipality( "Brakpan", "Gauteng" )
     );
 
     @Test
     public void testProvinces(){
-//        final PlacesDb db = new PlacesDb( TOWNS );
+//        final PlacesDb db = new PlacesDb( MUNICIPALITIES );
 //        assertThat( db.provinces().size() ).isEqualTo( 3 );
     }
 
     @Test
     public void testTownsInProvince(){
-//        final PlacesDb db = new PlacesDb( TOWNS );
+//        final PlacesDb db = new PlacesDb( MUNICIPALITIES );
 //        assertThat( db.townsIn( "Gauteng" ).size() ).isEqualTo( 4 );
 //        assertThat( db.townsIn( "Eastern Cape" ).size() ).isEqualTo( 2 );
 //        assertThat( db.townsIn( "Western Cape" ).size() ).isEqualTo( 3 );
