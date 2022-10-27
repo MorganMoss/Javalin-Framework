@@ -3,8 +3,6 @@ package wethinkcode.places;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Test data common to several of the test suites.

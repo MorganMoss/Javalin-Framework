@@ -6,7 +6,6 @@ import io.javalin.http.HttpStatus;
 import org.jetbrains.annotations.NotNull;
 import wethinkcode.places.PlaceNameService;
 import wethinkcode.places.model.Municipality;
-import wethinkcode.places.model.Place;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,16 +45,12 @@ public class MunicipalityController implements Route {
     @Override
     public EndpointGroup getEndPoints() {
         return () -> {
-            path("municipality", () -> {
-                path("{name}", () -> {
-                    get(this::getMunicipality);
-                });
-            });
-            path("municipalities", () -> {
-                path("{province}", () -> {
-                    get(this::getMunicipalitiesInProvince);
-                });
-            });
+            path("municipality", () -> path("{name}", () -> {
+                get(this::getMunicipality);
+            }));
+            path("municipalities", () -> path("{province}", () -> {
+                get(this::getMunicipalitiesInProvince);
+            }));
         };
     }
 }

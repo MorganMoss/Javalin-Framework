@@ -2,9 +2,7 @@ package wethinkcode.places;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import kong.unirest.HttpResponse;
@@ -13,7 +11,6 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONArray;
 import org.junit.jupiter.api.*;
 import wethinkcode.places.model.Place;
-import wethinkcode.places.model.Province;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static wethinkcode.places.PlacesTestData.createReaderForTest;
@@ -52,12 +49,6 @@ public class PlaceNameApiTest
            actual.add(array.getJSONObject(i).get("name").toString());
         }
         assertEquals(provinces, actual);
-
-//        System.out.println();
-//        assertEquals(
-//
-//
-//        );
     }
 
     @Test

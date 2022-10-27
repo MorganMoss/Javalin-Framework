@@ -1,8 +1,6 @@
 package wethinkcode.places.router.route;
 
-import io.javalin.apibuilder.CrudHandler;
 import io.javalin.apibuilder.EndpointGroup;
-import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
 
 /**

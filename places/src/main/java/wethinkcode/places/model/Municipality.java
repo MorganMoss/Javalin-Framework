@@ -1,5 +1,7 @@
 package wethinkcode.places.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
@@ -22,7 +24,7 @@ public record Municipality(String name, String province) implements Comparable<M
     }
 
     @Override
-    public int compareTo( Municipality other ){
+    public int compareTo(@NotNull Municipality other ){
         if( other == null ) throw new NullPointerException();
         return getProvince().equals(other.getProvince() )
             ? getName().compareTo(other.getName() )

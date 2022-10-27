@@ -95,10 +95,8 @@ public class PlaceNameService implements Runnable {
         Scanner s = new Scanner(System.in);
         String nextLine;
         while ((nextLine = s.nextLine())!=null && serverActive){
-            switch (nextLine){
-                case "quit":
-                    stop();
-                    break;
+            switch (nextLine) {
+                case "quit" -> stop();
             }
         }
     }

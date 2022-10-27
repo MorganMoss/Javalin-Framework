@@ -1,6 +1,8 @@
 package wethinkcode.places.model;
 
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A Municipality represents any town, neighbourhood, populated area or settled place in the place-names
  * data.
@@ -13,7 +15,7 @@ package wethinkcode.places.model;
 public record Province(String name) implements Comparable<Province> {
 
     @Override
-    public int compareTo(Province other) {
+    public int compareTo(@NotNull Province other) {
         if (other == null) throw new NullPointerException();
         return name().compareTo(other.name);
     }

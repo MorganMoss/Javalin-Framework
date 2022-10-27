@@ -1,9 +1,12 @@
 package wethinkcode.places.db.memory;
 
-import java.util.Set;
+import java.util.List;
 
 import org.junit.jupiter.api.*;
 import wethinkcode.places.model.Municipality;
+import wethinkcode.places.model.Province;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -13,7 +16,7 @@ import wethinkcode.places.model.Municipality;
  */
 public class PlacesDbTest
 {
-    public static final Set<Municipality> MUNICIPALITIES = Set.of(
+    public static final List<Municipality> MUNICIPALITIES = List.of(
         new Municipality( "Cape Municipality", "Western Cape" ),
         new Municipality( "Worcester", "Western Cape" ),
         new Municipality( "Riversdale", "Western Cape" ),
@@ -25,18 +28,23 @@ public class PlacesDbTest
         new Municipality( "Brakpan", "Gauteng" )
     );
 
+    public static final List<Province> PROVINCES = List.of(
+            new Province("Gauteng"),
+            new Province("Western Cape"),
+            new Province("Eastern Cape")
+    );
     @Test
-    public void testProvinces(){
-//        final PlacesDb db = new PlacesDb( MUNICIPALITIES );
-//        assertThat( db.provinces().size() ).isEqualTo( 3 );
+    public void testProvinces() {
+        final PlacesDb db = new PlacesDb(PROVINCES, MUNICIPALITIES, List.of());
+        assertEquals(3, db.provinces().size());
     }
 
     @Test
     public void testTownsInProvince(){
-//        final PlacesDb db = new PlacesDb( MUNICIPALITIES );
-//        assertThat( db.townsIn( "Gauteng" ).size() ).isEqualTo( 4 );
-//        assertThat( db.townsIn( "Eastern Cape" ).size() ).isEqualTo( 2 );
-//        assertThat( db.townsIn( "Western Cape" ).size() ).isEqualTo( 3 );
-//        assertThat( db.townsIn( "Northern Cape" ) ).isEmpty();
+        final PlacesDb db = new PlacesDb(PROVINCES, MUNICIPALITIES, List.of());
+        assertEquals(4 ,  db.municipalitiesIn( "Gauteng" ).size() );
+        assertEquals(2 ,  db.municipalitiesIn( "Eastern Cape" ).size() );
+        assertEquals(3 ,  db.municipalitiesIn( "Western Cape" ).size() );
+        assertEquals(0, db.municipalitiesIn( "Northern Cape" ).size() );
     }
 }
