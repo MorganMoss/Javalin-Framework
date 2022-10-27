@@ -16,7 +16,6 @@ public record Place(String name, String municipality) implements Comparable<Plac
 
     @Override
     public int compareTo(@NotNull Place other) {
-        if (other == null) throw new NullPointerException();
         return municipality().equals(other.municipality)
                 ? name().compareTo(other.name)
                 : municipality().compareTo(other.municipality);

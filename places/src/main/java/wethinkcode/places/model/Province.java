@@ -16,7 +16,6 @@ public record Province(String name) implements Comparable<Province> {
 
     @Override
     public int compareTo(@NotNull Province other) {
-        if (other == null) throw new NullPointerException();
         return name().compareTo(other.name);
     }
 

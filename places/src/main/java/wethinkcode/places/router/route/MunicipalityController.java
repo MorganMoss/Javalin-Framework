@@ -45,12 +45,8 @@ public class MunicipalityController implements Route {
     @Override
     public EndpointGroup getEndPoints() {
         return () -> {
-            path("municipality", () -> path("{name}", () -> {
-                get(this::getMunicipality);
-            }));
-            path("municipalities", () -> path("{province}", () -> {
-                get(this::getMunicipalitiesInProvince);
-            }));
+            path("municipality", () -> path("{name}", () -> get(this::getMunicipality)));
+            path("municipalities", () -> path("{province}", () -> get(this::getMunicipalitiesInProvince)));
         };
     }
 }

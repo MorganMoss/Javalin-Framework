@@ -25,7 +25,6 @@ public record Municipality(String name, String province) implements Comparable<M
 
     @Override
     public int compareTo(@NotNull Municipality other ){
-        if( other == null ) throw new NullPointerException();
         return getProvince().equals(other.getProvince() )
             ? getName().compareTo(other.getName() )
             : getProvince().compareTo(other.getProvince() );

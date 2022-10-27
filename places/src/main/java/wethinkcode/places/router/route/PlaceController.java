@@ -58,9 +58,7 @@ public class PlaceController implements Route {
     @Override
     public EndpointGroup getEndPoints() {
         return () -> {
-            path("place", () -> path("{name}", () -> {
-                get(this::getPlace);
-            }));
+            path("place", () -> path("{name}", () -> get(this::getPlace)));
             path("places", () -> {
                 path("province/{province}", () -> get(this::getPlacesInProvince));
                 path("municipality/{municipality}", () -> get(this::getPlacesInMunicipality));
