@@ -6,7 +6,6 @@ import java.util.List;
 import org.junit.jupiter.api.*;
 import wethinkcode.places.model.Place;
 import wethinkcode.places.model.Places;
-import wethinkcode.places.model.Municipality;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static wethinkcode.places.PlacesTestData.createReaderForTest;
@@ -33,7 +32,7 @@ public class PlacesCsvParserTest
 
 
     @Test
-    public void firstLineGetsSkipped() throws IOException {
+    public void firstLineGetsSkipped() {
         places = parser.parseDataLines(createReaderForTest(""));
         assertEquals(0, places.size());
     }
@@ -92,10 +91,11 @@ public class PlacesCsvParserTest
     public void parseTestDataFromFile() throws IOException {
         File file = new File("test.csv");
         if (!file.exists()){
-            file.createNewFile();
-            try ( FileWriter fw = new FileWriter( file)){
-                fw.write(PlacesTestData.HEADER);
-                fw.write(PlacesTestData.CSV_DATA);
+            if (file.createNewFile()) {
+                try (FileWriter fw = new FileWriter(file)) {
+                    fw.write(PlacesTestData.HEADER);
+                    fw.write(PlacesTestData.CSV_DATA);
+                }
             }
 
         }
@@ -119,12 +119,12 @@ public class PlacesCsvParserTest
     public void parseTestMissingHeaderDataFromFile() throws IOException {
         File file = new File("test_broken.csv");
         if (!file.exists()){
-            file.createNewFile();
-            try ( FileWriter fw = new FileWriter( file)){
-                fw.write(PlacesTestData.MISSING_ITEMS_HEADER);
-                fw.write(PlacesTestData.CSV_DATA);
+            if (file.createNewFile()){
+                try ( FileWriter fw = new FileWriter( file)){
+                    fw.write(PlacesTestData.MISSING_ITEMS_HEADER);
+                    fw.write(PlacesTestData.CSV_DATA);
+                }
             }
-
         }
         try {
             places = parser.parseCsvSource( file );
