@@ -4,13 +4,13 @@ package wethinkcode.places;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Resources;
 import io.javalin.Javalin;
-import picocli.CommandLine;
 import wethinkcode.places.model.Places;
 import wethinkcode.places.router.Router;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 
 /**
@@ -44,18 +44,19 @@ public class PlaceNameService implements Runnable {
 
     public static final int DEFAULT_SERVICE_PORT = 7000;
     public static final String CFG_DATA_FILE = "PlaceNamesZA2008.csv";
+    private boolean serverActive = false;
+
+    public static PlaceNameService svc;
 
     public static void main( String[] args ) throws IOException, URISyntaxException, InterruptedException {
-        final PlaceNameService svc = new PlaceNameService().initialise();
-        final int exitCode = new CommandLine( svc ).execute( args );
-        System.exit( exitCode );
+        svc = new PlaceNameService().initialise(args);
+        svc.run();
     }
 
     // Instance state
-
     private Javalin server;
-
-    public static Places places;
+    public Properties properties;
+    public Places places;
 
     public PlaceNameService(){
 
@@ -63,13 +64,16 @@ public class PlaceNameService implements Runnable {
 
     public void start() {
         int port = DEFAULT_SERVICE_PORT;
-        if (Properties.get("port")!=null){
-            port = Integer.parseInt(Properties.get("port"));
+        if (properties.get("port")!=null){
+            port = Integer.parseInt(properties.get("port"));
         }
-        server.start();
+        server.start(port);
+        serverActive = true;
     }
     public void stop() {
         server.stop();
+        serverActive = false;
+        System.out.println("Closing server");
     }
 
     /**
@@ -78,7 +82,8 @@ public class PlaceNameService implements Runnable {
      * starting up all the big machinery (i.e. without calling initialise()).
      */
     @VisibleForTesting
-    PlaceNameService initialise() throws IOException, URISyntaxException, InterruptedException {
+    PlaceNameService initialise(String... args) throws IOException, URISyntaxException, InterruptedException {
+        properties = initProperties(args);
         places = initPlacesDb();
         server = initHttpServer();
         return this;
@@ -86,7 +91,16 @@ public class PlaceNameService implements Runnable {
 
     @Override
     public void run(){
-        throw new UnsupportedOperationException( "TODO" );
+        start();
+        Scanner s = new Scanner(System.in);
+        String nextLine;
+        while ((nextLine = s.nextLine())!=null && serverActive){
+            switch (nextLine){
+                case "quit":
+                    stop();
+                    break;
+            }
+        }
     }
 
     private Places initPlacesDb() throws IOException, URISyntaxException {
@@ -98,5 +112,12 @@ public class PlaceNameService implements Runnable {
         Javalin server = Javalin.create();
         Router.loadRoutes(server);
         return server;
+    }
+
+    private Properties initProperties(String... args) throws IOException, URISyntaxException {
+        Properties properties = new Properties();
+        properties.loadDefault();
+        properties.fromCLI(args);
+        return properties;
     }
 }

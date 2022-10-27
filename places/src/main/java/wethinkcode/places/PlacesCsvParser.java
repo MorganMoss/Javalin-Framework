@@ -1,6 +1,8 @@
 package wethinkcode.places;
 
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -38,6 +40,41 @@ public class PlacesCsvParser
 
     private static final List<String> types = List.of("town", "neighbourhood", "populated area", "settled place", "urban area");
 
+    private ArrayList<String> split(String s, String delimiter, String encloser){
+        int e = s.indexOf(encloser);
+        int d = s.indexOf(delimiter);
+
+        if (e > d) {
+            int e2 = s.indexOf(encloser, e+1);
+            if (e2 > -1) {
+                d = s.indexOf(delimiter, e2+1);
+            }
+        }
+
+
+        if (d == -1){
+            return new ArrayList<>() {{
+                add(s);
+            }};
+        }
+
+        String item = s.substring(0, d);
+
+        if (d == 0){
+            item = "";
+        }
+
+        String left = s.substring(d+1);
+
+        String finalItem = item;
+        ArrayList<String> sl = new ArrayList<>() {{
+            add(finalItem);
+        }};
+
+        sl.addAll(split(left, delimiter, encloser));
+
+        return sl;
+    }
 
     /**
      * Takes into account the type_column,
@@ -45,8 +82,8 @@ public class PlacesCsvParser
      * @param s - the full line from the csv being parsed
      * @return true if the right type
      */
-    boolean isCorrectType(String[] s){
-        return types.contains(s[type_column].toLowerCase());
+    boolean isCorrectType(ArrayList<String> s){
+        return types.contains(s.get(type_column).toLowerCase());
     }
 
     private Place convertToPlace(String[] data){
@@ -59,6 +96,15 @@ public class PlacesCsvParser
 
     private Province convertToProvince(String[] data) {
         return new Province(data[province_column]);
+    }
+
+    private boolean removeNulls(String[] data){
+        return !(
+            data[name_column].equals("")
+            ||   data[province_column].equals("")
+            ||   data[type_column].equals("")
+            ||   data[municipality_column].equals("")
+        );
     }
 
     public Places parseCsvSource( File csvFile ) throws IOException {
@@ -79,6 +125,9 @@ public class PlacesCsvParser
         province_column = header.indexOf("Province");
         type_column = header.indexOf("Feature_Description");
         municipality_column = header.indexOf("Local Municipality");
+        if (name_column == -1 || province_column == -1 || type_column == -1 || municipality_column == -1){
+            throw new RuntimeException("Bad CSV Header");
+        }
     }
 
     @VisibleForTesting
@@ -89,9 +138,11 @@ public class PlacesCsvParser
 
         Stream<String[]> placeStream = lines
                 .stream()
-                .map((s) -> s.split(",", -1))
-//                .filter((s) -> s.length >= columns)
-                .filter(this::isCorrectType);
+                .map((s) -> split(s,",", "\""))
+                .filter((s) -> s.size() >= columns)
+                .filter(this::isCorrectType)
+                .map(strings -> strings.toArray(String[]::new))
+                .filter(this::removeNulls);
 
         List<String[]> placesRaw = placeStream.toList();
 
@@ -111,7 +162,6 @@ public class PlacesCsvParser
                 .stream()
                 .map(this::convertToPlace)
                 .toList();
-
 
         return new PlacesDb(provinces, municipalities, places);
     }

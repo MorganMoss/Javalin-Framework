@@ -1,14 +1,26 @@
 package wethinkcode.places;
 
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Test data common to several of the test suites.
  */
-public interface PlacesTestData
+public abstract class PlacesTestData
 {
+    public static LineNumberReader createReaderForTest(String data){
+        Reader reader = new StringReader(PlacesTestData.HEADER + data);
+        return new LineNumberReader(reader);
+    }
+
 
     public static final String HEADER = "Name,Feature_Description,pklid,Latitude,Longitude,Date,MapInfo,Province,fklFeatureSubTypeID,Previous_Name,fklMagisterialDistrictID,ProvinceID,fklLanguageID,fklDisteral,Local Municipality,Sound,District Municipality,fklLocalMunic,Comments,Meaning\n";
+    public static final String MISSING_ITEMS_HEADER = "Name, pklid, Date, Province, Sound";
     public static final String CSV_DATA =
-        // First line in the data is just headers and must be ignored.
+        // First line in the data is just headers and must be ignored..
         // In total, 13 lines including the header line, 5 of these are towns/urban areas.
         //
         // Amatikulu: we want the town, not the station.

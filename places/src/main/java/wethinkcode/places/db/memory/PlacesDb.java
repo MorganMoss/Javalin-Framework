@@ -1,6 +1,5 @@
 package wethinkcode.places.db.memory;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +24,12 @@ public class PlacesDb implements Places
     }
 
     @Override
-    public Collection<Province> provinces(){
+    public List<Province> provinces(){
         return provinces;
     }
 
     @Override
-    public Collection<Municipality> municipalitiesIn(String province) {
+    public List<Municipality> municipalitiesIn(String province) {
         return municipalities
                 .stream()
                 .filter(municipality -> municipality.getProvince().equals(province))
@@ -38,7 +37,7 @@ public class PlacesDb implements Places
     }
 
     @Override
-    public Collection<Place> placesInMunicipality(String municipality) {
+    public List<Place> placesInMunicipality(String municipality) {
         return places.stream()
                 .filter(place -> place.municipality().equals(municipality))
                 .toList();

@@ -1,9 +1,6 @@
 package wethinkcode.places;
 
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
@@ -11,8 +8,8 @@ import wethinkcode.places.model.Place;
 import wethinkcode.places.model.Places;
 import wethinkcode.places.model.Municipality;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import static wethinkcode.places.PlacesTestData.createReaderForTest;
 
 /**
  * Unit-test suite for the CSV parser.
@@ -34,10 +31,6 @@ public class PlacesCsvParserTest
         parser = null;
     }
 
-    LineNumberReader createReaderForTest(String data){
-        Reader reader = new StringReader(PlacesTestData.HEADER + data);
-        return new LineNumberReader(reader);
-    }
 
     @Test
     public void firstLineGetsSkipped() throws IOException {
@@ -91,8 +84,56 @@ public class PlacesCsvParserTest
     @Test
     public void parseBulkTestData(){
         places = parser.parseDataLines( createReaderForTest(PlacesTestData.CSV_DATA) );
-        System.out.println(places);
         assertEquals( 5, places.size() );
 
     }
+
+    @Test
+    public void parseTestDataFromFile() throws IOException {
+        File file = new File("test.csv");
+        if (!file.exists()){
+            file.createNewFile();
+            try ( FileWriter fw = new FileWriter( file)){
+                fw.write(PlacesTestData.HEADER);
+                fw.write(PlacesTestData.CSV_DATA);
+            }
+
+        }
+        places = parser.parseCsvSource( file );
+        assertEquals( 5, places.size() );
+    }
+
+    @Test
+    public void badFile() throws IOException {
+        File file = new File("bad.csv");
+        try {
+            places = parser.parseCsvSource( file );
+            fail("Must throw fileNotFoundException");
+        } catch (FileNotFoundException e){
+            return;
+        }
+            fail("Wrong exception thrown");
+    }
+
+    @Test
+    public void parseTestMissingHeaderDataFromFile() throws IOException {
+        File file = new File("test_broken.csv");
+        if (!file.exists()){
+            file.createNewFile();
+            try ( FileWriter fw = new FileWriter( file)){
+                fw.write(PlacesTestData.MISSING_ITEMS_HEADER);
+                fw.write(PlacesTestData.CSV_DATA);
+            }
+
+        }
+        try {
+            places = parser.parseCsvSource( file );
+            fail("Must throw Exception");
+        } catch (RuntimeException e){
+            assertEquals("Bad CSV Header", e.getMessage());
+            return;
+        }
+        fail("Wrong exception thrown");
+    }
+
 }

@@ -10,11 +10,11 @@ import java.util.Optional;
  */
 public interface Places
 {
-    Collection<Province> provinces();
+    List<Province> provinces();
 
-    Collection<Municipality> municipalitiesIn(String province );
+    List<Municipality> municipalitiesIn(String province );
 
-    Collection<Place> placesInMunicipality(String municipality);
+    List<Place> placesInMunicipality(String municipality);
 
     List<Place> placesInProvince(String province);
 

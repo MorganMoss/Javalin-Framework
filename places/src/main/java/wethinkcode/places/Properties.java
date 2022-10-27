@@ -1,43 +1,41 @@
 package wethinkcode.places;
 
+import com.google.common.io.Resources;
+
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 public class Properties {
-    private static java.util.Properties properties;
+    private final java.util.Properties properties = new java.util.Properties();
 
-    public static void load(String propertiesFile) throws IOException {
-        // create a reader object on the properties file
+    public void load(File propertiesFile) throws IOException {
         FileReader reader = new FileReader(propertiesFile);
-
-        // create properties object
-        properties = new java.util.Properties();
-
-        // Add a wrapper around reader object
         properties.load(reader);
     }
 
-    public static void loadDefault() throws IOException {
-        load("default.properties");
+    public void loadDefault() throws IOException, URISyntaxException {
+        File f = new File(Resources.getResource("default.properties").toURI());
+        load(f);
     }
 
-    public static String get(String property){
+    public String get(String property){
         return properties.getProperty(property);
     }
 
-    public static void set(String property, String value){
+    public void set(String property, String value){
         properties.setProperty(property, value);
     }
 
-    public static void save(String fileName, String comment) throws IOException {
+    public void save(String fileName, String comment) throws IOException {
         try (OutputStream out = new FileOutputStream(fileName)){
             properties.store(out, comment);
         }
     }
 
-    public static void fromCLI(String ...s){
+    public void fromCLI(String ...s){
         Arrays.stream(s)
-                .map((string) -> string.split("=", 1))
+                .map((string) -> string.split("=", -1))
                 .forEach((property) -> properties.setProperty(property[0], property[1]));
     }
 
