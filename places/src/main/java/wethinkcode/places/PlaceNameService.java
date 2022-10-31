@@ -5,7 +5,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Resources;
 import io.javalin.Javalin;
 import wethinkcode.places.model.Places;
-import wethinkcode.places.router.Router;
+import wethinkcode.router.Router;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +108,7 @@ public class PlaceNameService implements Runnable {
 
     private Javalin initHttpServer() throws InterruptedException {
         Javalin server = Javalin.create();
-        Router.loadRoutes(server);
+        Router.loadRoutes("wethinkcode.places.route").forEach(server::routes);
         return server;
     }
 

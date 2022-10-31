@@ -1,4 +1,4 @@
-package wethinkcode.places.router.route;
+package wethinkcode.router;
 
 import io.javalin.apibuilder.EndpointGroup;
 import org.jetbrains.annotations.NotNull;

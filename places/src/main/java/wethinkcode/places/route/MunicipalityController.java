@@ -1,4 +1,4 @@
-package wethinkcode.places.router.route;
+package wethinkcode.places.route;
 
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
@@ -12,6 +12,8 @@ import java.util.Optional;
 
 import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.path;
+
+import wethinkcode.router.Route;
 
 public class MunicipalityController implements Route {
     /**
@@ -46,6 +48,7 @@ public class MunicipalityController implements Route {
     public EndpointGroup getEndPoints() {
         return () -> {
             path("municipality", () -> path("{name}", () -> get(this::getMunicipality)));
+            path("towns", () -> path("{province}", () -> get(this::getMunicipalitiesInProvince)));
             path("municipalities", () -> path("{province}", () -> get(this::getMunicipalitiesInProvince)));
         };
     }

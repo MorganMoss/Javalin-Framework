@@ -1,11 +1,11 @@
-package wethinkcode.places.router;
+package wethinkcode.router;
 
-import wethinkcode.places.router.route.Route;
-
-import io.javalin.Javalin;
-
+import io.javalin.apibuilder.EndpointGroup;
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
+
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,10 +16,9 @@ import static java.util.logging.Logger.getLogger;
 
 
 public class Router {
-    private static final String PLUGIN_PACKAGE_PREFIX = "wethinkcode.places.router.route";
     private static final Logger logger = getLogger("Router");
-
-    private static Javalin server;
+    private static String PLUGIN_PACKAGE_PREFIX;
+    private static Set<EndpointGroup> endpoints;
 
     /**
      * Gets a list of classes that implement Route
@@ -35,7 +34,7 @@ public class Router {
      * @param route that controls handlers over a certain path.
      */
     private static void setupHandler(Route route){
-        server.routes(route.getEndPoints());
+        endpoints.add(route.getEndPoints());
     }
 
     /**
@@ -83,10 +82,12 @@ public class Router {
         waitForLoad(pool);
     }
 
-    public static void loadRoutes(Javalin server) throws InterruptedException {
-        Router.server = server;
+    @NotNull
+    public static Set<EndpointGroup> loadRoutes(String prefix) throws InterruptedException {
+        Router.endpoints = new HashSet<>();
+        Router.PLUGIN_PACKAGE_PREFIX = prefix;
         setupAllHandlers();
-        Router.server = null;
+        return Router.endpoints;
     }
 
 }

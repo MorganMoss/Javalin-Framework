@@ -1,4 +1,4 @@
-package wethinkcode.places.router.route;
+package wethinkcode.places.route;
 
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
@@ -11,6 +11,8 @@ import java.util.Collection;
 
 import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.path;
+
+import wethinkcode.router.Route;
 
 public class ProvinceController implements Route {
     /**
