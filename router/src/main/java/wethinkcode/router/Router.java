@@ -14,18 +14,31 @@ import java.util.logging.Logger;
 
 import static java.util.logging.Logger.getLogger;
 
-
+/**
+ * The Router Class uses reflection
+ * to get a set of endpoints from
+ * classes that implement the Routes interface.
+ */
 public class Router {
     private static final Logger logger = getLogger("Router");
-    private static String PLUGIN_PACKAGE_PREFIX;
-    private static Set<EndpointGroup> endpoints;
+    private final String route_package;
+    private final Set<EndpointGroup> endpoints;
+
+    /**
+     * The constructor creates an empty set for the endpoints and assigns the route package.
+     * @param route_package the package url that this will pull classes from
+     */
+    public Router(String route_package) {
+        this.route_package = route_package;
+        this.endpoints = new HashSet<>();
+    }
 
     /**
      * Gets a list of classes that implement Route
      * @return a set of classes
      */
-    private static Set<Class<? extends Route>> getHandlers(){
-        Reflections reflections = new Reflections(PLUGIN_PACKAGE_PREFIX);
+    private Set<Class<? extends Route>> getHandlers(){
+        Reflections reflections = new Reflections(route_package);
         return reflections.getSubTypesOf(Route.class);
     }
 
@@ -33,7 +46,7 @@ public class Router {
      * Takes a route and adds it to the servers routes
      * @param route that controls handlers over a certain path.
      */
-    private static void setupHandler(Route route){
+    private void setupHandler(Route route){
         endpoints.add(route.getEndPoints());
     }
 
@@ -42,7 +55,7 @@ public class Router {
      * @param handler to be added
      * @return the runnable
      */
-    private static Runnable createRunnable(Class<? extends Route> handler){
+    private Runnable createRunnable(Class<? extends Route> handler){
         return () -> {
             try {
                 setupHandler(handler.getDeclaredConstructor().newInstance());
@@ -50,27 +63,27 @@ public class Router {
                      NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
-            logger.info("The plugin '" + handler.getName() + "' has been loaded.");
+            logger.info("The plugin '" + handler.getName() + "' has been loaded from " + route_package + ".");
         };
     }
 
     /**
      * Waits for all the handlers to load
      * @param pool of threads
-     * @throws InterruptedException if interrupted
      */
-    private static void waitForLoad(ExecutorService pool) throws InterruptedException {
+    private void waitForLoad(ExecutorService pool){
         pool.shutdown();
-
-        if (!pool.awaitTermination(5, TimeUnit.MINUTES)){
-            throw new RuntimeException("Failed to load all Routes");
-        }
+        try {
+            if (!pool.awaitTermination(5, TimeUnit.MINUTES)){
+                throw new RuntimeException("Failed to load all Routes");
+            }
+        } catch (InterruptedException ignored){}
     }
 
     /**
      * Sets up the router calls for the server, excluding the static pages
      */
-    private static void setupAllHandlers() throws InterruptedException {
+    private void setupAllHandlers() {
         Set<Class<? extends Route>> handlers = getHandlers();
         ExecutorService pool = Executors.newFixedThreadPool(handlers.size());
 
@@ -79,15 +92,22 @@ public class Router {
         for (Class<? extends Route> handler : handlers){
             pool.submit(createRunnable(handler));
         }
+
         waitForLoad(pool);
     }
 
+
+    /**
+     * This takes all classes in a specified packages that inherit the Route interface
+     * and gets their endpoint group and adds it to a set of endpoint groups.
+     * @param route_package the package that contains a few classes that implement Route
+     * @return A set of the endpoint groups pulled from the package with the given prefix
+     */
     @NotNull
-    public static Set<EndpointGroup> loadRoutes(String prefix) throws InterruptedException {
-        Router.endpoints = new HashSet<>();
-        Router.PLUGIN_PACKAGE_PREFIX = prefix;
-        setupAllHandlers();
-        return Router.endpoints;
+    public static Set<EndpointGroup> loadRoutes(String route_package) {
+        Router router = new Router(route_package);
+        router.setupAllHandlers();
+        return router.endpoints;
     }
 
 }
