@@ -10,17 +10,15 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import static java.util.logging.Logger.getLogger;
-
+import java.util.logging.*;
 /**
  * The Router Class uses reflection
  * to get a set of endpoints from
  * classes that implement the Routes interface.
  */
 public class Router {
-    private static final Logger logger = getLogger("Router");
+
+    private final Logger logger;
     private final String route_package;
     private final Set<EndpointGroup> endpoints;
 
@@ -31,6 +29,19 @@ public class Router {
     public Router(String route_package) {
         this.route_package = route_package;
         this.endpoints = new HashSet<>();
+
+
+        logger = Logger.getLogger(this.getClass().getSimpleName());
+
+        logger.setUseParentHandlers(false);
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(new SimpleFormatter() {
+            public synchronized String format(LogRecord lr) {
+                return "[" + lr.getLoggerName() + "] " + lr.getLevel().getLocalizedName() + " " + lr.getMessage() + "\n";
+            }
+        });
+
+        logger.addHandler(handler);
     }
 
     /**
@@ -63,7 +74,7 @@ public class Router {
                      NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
-            logger.info("The plugin '" + handler.getName() + "' has been loaded from " + route_package + ".");
+            logger.log(Level.INFO,"The plugin '" + handler.getSimpleName() + "' has been loaded from " + route_package);
         };
     }
 
@@ -87,13 +98,15 @@ public class Router {
         Set<Class<? extends Route>> handlers = getHandlers();
         ExecutorService pool = Executors.newFixedThreadPool(handlers.size());
 
-        logger.info("Starting to load Handlers...");
+        logger.info("Starting to load Routes from " + route_package + "...");
 
         for (Class<? extends Route> handler : handlers){
             pool.submit(createRunnable(handler));
         }
 
         waitForLoad(pool);
+
+        logger.info("Found and loaded all Routes from " + route_package);
     }
 
 
@@ -105,7 +118,10 @@ public class Router {
      */
     @NotNull
     public static Set<EndpointGroup> loadRoutes(String route_package) {
+
+
         Router router = new Router(route_package);
+
         router.setupAllHandlers();
         return router.endpoints;
     }

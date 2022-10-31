@@ -82,7 +82,7 @@ public class PlaceNameService implements Runnable {
      * starting up all the big machinery (i.e. without calling initialise()).
      */
     @VisibleForTesting
-    PlaceNameService initialise(String... args) throws IOException, URISyntaxException, InterruptedException {
+    PlaceNameService initialise(String... args) throws IOException, URISyntaxException {
         properties = initProperties(args);
         places = initPlacesDb();
         server = initHttpServer();
@@ -106,7 +106,7 @@ public class PlaceNameService implements Runnable {
         return new PlacesCsvParser().parseCsvSource(databaseFile);
     }
 
-    private Javalin initHttpServer() throws InterruptedException {
+    private Javalin initHttpServer() {
         Javalin server = Javalin.create();
         Router.loadRoutes("wethinkcode.places.route").forEach(server::routes);
         return server;
