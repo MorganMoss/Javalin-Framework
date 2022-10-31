@@ -1,41 +1,56 @@
 package wethinkcode.places;
 
-import com.google.common.io.Resources;
+import picocli.CommandLine;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.concurrent.Callable;
 
-public class Properties {
-    private final java.util.Properties properties = new java.util.Properties();
+public class Properties implements Callable<Integer> {
+    private static final String DEFAULT_CONFIG_FILE = "places/resources/default.properties";
+    private static final String DEFAULT_DATA_FILE = "places/resources/PlaceNamesZA2008.csv";
+    private static final String DEFAULT_PORT = "7000";
 
-    public void load(File propertiesFile) throws IOException {
-        FileReader reader = new FileReader(propertiesFile);
-        properties.load(reader);
-    }
+    @CommandLine.Option(
+            names = {"--config", "-c"},
+            description = "A file pathname referring to an (existing!) configuration file in standard Java properties-file format",
+            defaultValue = DEFAULT_CONFIG_FILE,
+            type = File.class
+    )
+    File config;
 
-    public void loadDefault() throws IOException, URISyntaxException {
-        File f = new File(Resources.getResource("default.properties").toURI());
-        load(f);
-    }
+    @CommandLine.Option(
+            names = {"--data", "-d"},
+            description = "The name of a directory where CSV datafiles may be found. This option overrides and data-directory setting in a configuration file.",
+            type = File.class
+    )
+    File data = null;
 
-    public String get(String property){
-        return properties.getProperty(property);
-    }
+    @CommandLine.Option(
+            names = {"--port", "-p"},
+            description = "The name of a directory where CSV datafiles may be found. This option overrides and data-directory setting in a configuration file.",
+            type = Integer.class
+    )
+    Integer port = null;
 
-    public void set(String property, String value){
-        properties.setProperty(property, value);
-    }
+    @Override
+    public Integer call(){
+        java.util.Properties properties = new java.util.Properties();
 
-    public void save(String fileName, String comment) throws IOException {
-        try (OutputStream out = new FileOutputStream(fileName)){
-            properties.store(out, comment);
+        try {
+            assert config != null;
+            properties.load(new FileReader(config));
+        } catch (IOException e){
+            throw new RuntimeException(e);
         }
-    }
 
-    public void fromCLI(String ...s){
-        Arrays.stream(s)
-                .map((string) -> string.split("=", -1))
-                .forEach((property) -> properties.setProperty(property[0], property[1]));
+        if (data == null) {
+            data = new File((String) properties.getOrDefault("data", DEFAULT_DATA_FILE));
+        }
+
+        if (port == null) {
+            port = Integer.parseInt((String) properties.getOrDefault("port", DEFAULT_PORT));
+        }
+
+        return 0;
     }
 }

@@ -1,5 +1,7 @@
 package wethinkcode.places;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -28,10 +30,21 @@ public class PlaceNameApiTest
     public static void startServer() throws IOException, URISyntaxException, InterruptedException {
         server = new PlaceNameService();
         PlaceNameService.svc = server;
-        server.initialise("port="+TEST_PORT);
-        PlacesCsvParser parser = new PlacesCsvParser();
-        server.places = parser.parseDataLines( createReaderForTest(PlacesTestData.CSV_DATA));
-        new Thread(server).start();
+        File file = new File("test.csv");
+        if (!file.exists()){
+            if (file.createNewFile()) {
+                try (FileWriter fw = new FileWriter(file)) {
+                    fw.write(PlacesTestData.HEADER);
+                    fw.write(PlacesTestData.CSV_DATA);
+                }
+            }
+
+        }
+        server.initialise("-p="+TEST_PORT, "-d="+file.getCanonicalPath());
+
+        Thread t = new Thread(server);
+        t.setName("places-service");
+        t.start();
     }
 
     @AfterAll

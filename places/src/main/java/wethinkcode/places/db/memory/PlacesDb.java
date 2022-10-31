@@ -32,7 +32,7 @@ public class PlacesDb implements Places
     public List<Municipality> municipalitiesIn(String province) {
         return municipalities
                 .stream()
-                .filter(municipality -> municipality.getProvince().equals(province))
+                .filter(municipality -> municipality.province().equals(province))
                 .toList();
     }
 
@@ -49,7 +49,7 @@ public class PlacesDb implements Places
             .filter(place -> {
                 Optional<Municipality> m = municipality(place.municipality());
                 return m
-                        .map(municipality -> municipality.getProvince().equals(province))
+                        .map(municipality -> municipality.province().equals(province))
                         .orElse(false);
             })
             .toList();
@@ -58,7 +58,7 @@ public class PlacesDb implements Places
     @Override
     public Optional<Municipality> municipality(String name) {
         return municipalities.stream()
-                .filter(municipality -> municipality.getName().equals(name))
+                .filter(municipality -> municipality.name().equals(name))
                 .findFirst();
     }
 

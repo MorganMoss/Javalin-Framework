@@ -108,7 +108,7 @@ public class PlacesCsvParser
 
     public Places parseCsvSource( File csvFile ) throws IOException {
         if (!csvFile.exists()){
-            throw new FileNotFoundException();
+            throw new FileNotFoundException(csvFile.getPath());
         }
 
         FileReader fileReader = new FileReader(csvFile);

@@ -1,7 +1,6 @@
 package wethinkcode.places.model;
 
-
-import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 /**
  * A Municipality represents any town, neighbourhood, populated area or settled place in the place-names
@@ -12,27 +11,9 @@ import org.jetbrains.annotations.NotNull;
  * then we'd also need better data than we have access to... Since our mission is to explore
  * Distributed Systems and integration, our assumption is Good Enough.)
  */
-public record Province(String name) implements Comparable<Province> {
-
-    @Override
-    public int compareTo(@NotNull Province other) {
-        return name().compareTo(other.name);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        final Province other = (Province) obj;
-        return this.name.equals(other.name);
-    }
-
-    @Override
-    public String toString() {
-        return "Province{"
-                + name()
-                + "}";
+public record Province(String name) {
+    public Province{
+        Objects.requireNonNull(name);
     }
 }
 
