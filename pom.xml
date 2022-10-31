@@ -8,7 +8,8 @@
     <modules>
         <module>places</module>
         <module>router</module>
-        <module>configuration</module>
+        <module>stage</module>
+        <module>service</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

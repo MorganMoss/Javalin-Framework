@@ -23,7 +23,7 @@ public class Router {
     private final Set<EndpointGroup> endpoints;
 
     /**
-     * The constructor creates an empty set for the endpoints and assigns the route package.
+     * The constructor creates an empty set for the endpoints and assigns the routes package.
      * @param route_package the package url that this will pull classes from
      */
     public Router(String route_package) {
@@ -54,7 +54,7 @@ public class Router {
     }
 
     /**
-     * Takes a route and adds it to the servers routes
+     * Takes a routes and adds it to the servers routes
      * @param route that controls handlers over a certain path.
      */
     private void setupHandler(Route route){
@@ -96,6 +96,12 @@ public class Router {
      */
     private void setupAllHandlers() {
         Set<Class<? extends Route>> handlers = getHandlers();
+
+        if (handlers.size() == 0){
+            logger.info("No routes in " + route_package);
+            return;
+        }
+
         ExecutorService pool = Executors.newFixedThreadPool(handlers.size());
 
         logger.info("Starting to load Routes from " + route_package + "...");

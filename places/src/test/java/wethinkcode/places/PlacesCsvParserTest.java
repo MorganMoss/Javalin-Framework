@@ -60,8 +60,6 @@ public class PlacesCsvParserTest
     public void townsAreWanted(){
         final String testLine = "Brakpan,Town,92802,-27.95111111,26.53333333,30-05-1975,,Free State,68,,155,2,16,DC18,Matjhabeng,,,FS184,,";
         places =parser.parseDataLines(createReaderForTest(testLine));
-        System.out.println(places.provinces());
-        System.out.println(testLine.split(",", -1).length);
 
         assertEquals(
                 List.of(new Place("Brakpan","Matjhabeng")),
@@ -101,6 +99,7 @@ public class PlacesCsvParserTest
         }
         places = parser.parseCsvSource( file );
         assertEquals( 5, places.size() );
+        file.delete();
     }
 
     @Test
@@ -113,6 +112,7 @@ public class PlacesCsvParserTest
             return;
         }
             fail("Wrong exception thrown");
+        file.delete();
     }
 
     @Test
@@ -131,9 +131,11 @@ public class PlacesCsvParserTest
             fail("Must throw Exception");
         } catch (RuntimeException e){
             assertEquals("Bad CSV Header", e.getMessage());
+            file.delete();
             return;
         }
         fail("Wrong exception thrown");
+        file.delete();
     }
 
 }

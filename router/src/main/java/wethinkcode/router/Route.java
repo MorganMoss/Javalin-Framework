@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface Route{
     /**
-     * This contains all the handlers for this route
+     * This contains all the handlers for this routes
      * @return endpoint group that will to be added to a set of endpoint groups
      */
     @NotNull

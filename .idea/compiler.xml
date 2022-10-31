@@ -8,6 +8,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="places" />
         <module name="router" />
+        <module name="stage" />
+        <module name="service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

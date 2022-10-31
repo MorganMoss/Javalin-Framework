@@ -15,41 +15,53 @@ import org.junit.jupiter.api.*;
 import wethinkcode.places.model.Place;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static wethinkcode.places.PlacesTestData.createReaderForTest;
+import static wethinkcode.places.PlacesService.SERVICE;
 
 /**
- * *Functional* tests of the PlaceNameService.
+ * *Functional* tests of the PlacesService.
  */
-public class PlaceNameApiTest
+public class PlacesApiTest
 {
     public static final int TEST_PORT = 7777;
 
-    private static PlaceNameService server ;
 
     @BeforeAll
-    public static void startServer() throws IOException, URISyntaxException, InterruptedException {
-        server = new PlaceNameService();
-        PlaceNameService.svc = server;
-        File file = new File("test.csv");
-        if (!file.exists()){
-            if (file.createNewFile()) {
-                try (FileWriter fw = new FileWriter(file)) {
+    public static void startServer() throws IOException, URISyntaxException {
+
+
+        File data = new File("test.csv");
+        if (!data.exists()){
+            if (data.createNewFile()) {
+                try (FileWriter fw = new FileWriter(data)) {
                     fw.write(PlacesTestData.HEADER);
                     fw.write(PlacesTestData.CSV_DATA);
                 }
             }
 
         }
-        server.initialise("-p="+TEST_PORT, "-d="+file.getCanonicalPath());
 
-        Thread t = new Thread(server);
-        t.setName("places-service");
-        t.start();
+        File properties = new File("test.properties");
+        if (!properties.exists()){
+            if (properties.createNewFile()) {
+                try (FileWriter fw = new FileWriter(properties)) {
+                    fw.write("data="+data.getAbsolutePath());
+                }
+            }
+
+        }
+
+        PlacesService.activate(
+            SERVICE.initialise("-p="+TEST_PORT, "-c="+properties.getAbsolutePath()),
+            "Test-Places-Service"
+        );
+
+        properties.delete();
+        data.delete();
     }
 
     @AfterAll
     public static void stopServer(){
-        server.stop();
+        SERVICE.stop();
     }
 
     @Test
