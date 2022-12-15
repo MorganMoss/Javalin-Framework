@@ -7,14 +7,25 @@ import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
 public class Logger {
+    /**
+     * Creates a logger with a specified name and colours for info logs
+     * @return the logger
+     */
     public static java.util.logging.Logger formatted(String name, String info_colour, String message_colour){
         java.util.logging.Logger logger = java.util.logging.Logger.getLogger(name);
         changeFormat(logger, info_colour, message_colour);
         return logger;
     }
 
+    /**
+     * Make this false to disable info logs.
+     */
     public static boolean showInfo = true;
 
+
+    /**
+     * Takes a logger and changes its colours
+     */
     public static void changeFormat(java.util.logging.Logger logger, String info_colour, String message_colour){
         logger.setUseParentHandlers(false);
         Arrays.stream(logger.getHandlers()).forEach(logger::removeHandler);

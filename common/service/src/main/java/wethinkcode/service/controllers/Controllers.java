@@ -26,6 +26,7 @@ public class Controllers {
 
     private final Logger logger;
 
+
     public Controllers(Object instance) {
         this.instance = instance;
         logger = formatted(
@@ -35,6 +36,10 @@ public class Controllers {
                 "\u001B[38;5;39m", "\u001B[38;5;45m");
     }
 
+    /**
+     * Get's all endpoints that this object will handle.
+     * @return a set of all those endpoints
+     */
     public Set<EndpointGroup> getEndpoints(){
         Set<Class<?>> controllers = findControllers();
         if (controllers.size() == 0){
@@ -86,6 +91,10 @@ public class Controllers {
         });
     }
 
+    /**
+     * Looks in the instance class's package for any annotated classes
+     * @return a set of classes that are candidates for searching for endpoints
+     */
     private Set<Class<?>> findControllers(){
         logger.info("Searching for Controller annotated classes...");
         Reflections reflections = new Reflections(instance.getClass().getPackageName());
@@ -97,20 +106,39 @@ public class Controllers {
         classes.forEach(this::addEndpoints);
     }
 
-
+    /**
+     * Annotate a class with this to mark it as a group
+     * of static endpoints to handle requests for a service
+     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Controller {
+        /**
+         * This value is for the prefix path for the requests inside
+         * @return the path
+         */
         String value();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface Mapping {
+        /**
+         * The verb is the kind of request this will be
+         */
         Verb value();
+
+        /**
+         * The last section of the path for the endpoint, to be attached to the controllers path
+         * @return the path
+         */
         String path() default "";
     }
 
+    /**
+     * This is to make upgrading easier. If you already have a group of endpoints,
+     * annotate them with this to have them be collected and added to the rest.
+     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface Endpoint{ }

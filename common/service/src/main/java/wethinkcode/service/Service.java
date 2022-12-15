@@ -160,10 +160,9 @@ public class Service<E>{
     }
 
     /**
-     * Stops this service
-     * @throws AlreadyStoppedException if you try stop it a second time.
+     * Stops this service, runs any onShutdown methods at the same time.
      */
-    public void stop() throws AlreadyStoppedException{
+    public void stop(){
         if (stopped){
             publishWarning(instance.getClass().getSimpleName(),"This service is designed to be stopped once");
             return;
@@ -261,7 +260,7 @@ public class Service<E>{
 
     private void run() {
         if (started){
-            throw new AlreadyStartedException("This service is designed to be run once");
+            return;
         }
 
         started = true;
@@ -666,11 +665,6 @@ class NotAServiceException extends RuntimeException {
     }
 }
 
-class MultipleJSONMapperMethodsException extends RuntimeException {
-    public MultipleJSONMapperMethodsException(String message){
-        super(message);
-    }
-}
 
 class MethodTakesNoArgumentsException extends RuntimeException {
     public MethodTakesNoArgumentsException(String message){
@@ -680,17 +674,6 @@ class MethodTakesNoArgumentsException extends RuntimeException {
 
 class ArgumentException extends RuntimeException {
     public ArgumentException(String message){
-        super(message);
-    }
-}
-
-class AlreadyStartedException extends RuntimeException {
-    public AlreadyStartedException(String message){
-        super(message);
-    }
-}
-class AlreadyStoppedException extends RuntimeException {
-    public AlreadyStoppedException(String message){
         super(message);
     }
 }
