@@ -99,6 +99,10 @@ public class Broker {
         SERVICE.setBrokerName(NAME);
     }
 
+    /**
+     * Starts up the broker, ignores subsequent calls. Stops when the program stops.
+     * @throws Exception when it fails to start up.
+     */
     public static void start() throws Exception {
         if (ACTIVE) {
             LOGGER.info("Already started.");

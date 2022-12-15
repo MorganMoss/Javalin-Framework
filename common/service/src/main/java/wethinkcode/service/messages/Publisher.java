@@ -17,6 +17,12 @@ public class Publisher {
     private URI uri;
     private final String name;
 
+    /**
+     * Set up the initial parameters for the publisher
+     * @param destinationName i.e. the queue or topic name
+     * @param name of the publisher,
+     *             generally will note the name of the method and class handling the message.
+     */
     public Publisher(String destinationName, String name) {
         this.logger = formatted("Publisher " + name, "\u001b[38;5;9m", "\u001b[38;5;209m");
         this.destinationName = destinationName;
@@ -24,6 +30,12 @@ public class Publisher {
         this.name = name;
     }
 
+    /**
+     * Starts up the publisher, uses a consumer to accept the messages and handle them externally
+     * @param messages a queue of messages that it'll send through to the amq service
+     * @throws JMSException if it fails to start up.
+     * @throws InterruptedException If there's an issue sleeping
+     */
     public void publish(Queue<String> messages) throws JMSException, InterruptedException {
         logger.info("Starting Publisher on " + destinationName);
         Session session = getSession(uri);
@@ -48,6 +60,9 @@ public class Publisher {
         }
     }
 
+    /**
+     * If you want to use a amq service externally
+     */
     public void overrideURL(String overrideURL) throws URISyntaxException {
         uri = new URI(overrideURL);
     }

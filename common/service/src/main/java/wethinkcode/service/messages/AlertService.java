@@ -12,6 +12,10 @@ import java.util.logging.Logger;
 
 import static wethinkcode.logger.Logger.formatted;
 
+/**
+ * Used to send warnings and severe issues to nfty,
+ * the internal alert queue and simultaneously log these issues.
+ */
 @Service.AsService
 public class AlertService {
     @Service.Publish(destination = "alert")
@@ -37,6 +41,10 @@ public class AlertService {
         });
     }
 
+    /**
+     * Starts up this services posting to the internal alert
+     * queue and also start up a thread that watches for uncaught runtime exceptions
+     */
     public static void start(){
         if (RUNTIME_EXCEPTION_CATCHER.isAlive()){
             return;
@@ -54,17 +62,28 @@ public class AlertService {
         }
     }
 
+    /**
+     * Marks an issue as severe, posts it on nfty, the alert queue and logs it.
+     * Will also stop the program.
+     * @param location i.e. where the issue lies
+     * @param message what kind of issue is this?
+     * @param e the exception thrown, for a full stack trace.
+     */
     public static void publishSevere(String location, String message, Exception e){
         LOGGER.severe("["+location+ "] " + message);
-        postToNTFY(message);
+        postToNTFY("["+location+ "] [SEVERE] " + message);
         ERRORS.add("["+location+ "] [SEVERE] " + message);
         e.printStackTrace();
         System.exit(6);
     }
-
+    /**
+     * Marks an issue as severe, posts it on nfty, the alert queue and logs it.
+     * @param location i.e. where the issue lies
+     * @param message what kind of issue is this?
+     */
     public static void publishWarning(String location, String message){
         LOGGER.warning("["+location+ "] " + message);
-        postToNTFY(message);
+        postToNTFY("["+location+ "] [WARNING] " + message);
         ERRORS.add("["+location+ "] [WARNING] " + message);
     }
 }
