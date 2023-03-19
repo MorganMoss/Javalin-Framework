@@ -1,4 +1,4 @@
-# loadshedding-submission
+# Javalin Framework
 
 The common module is a framework for creating javalin based services via annotations.
 
